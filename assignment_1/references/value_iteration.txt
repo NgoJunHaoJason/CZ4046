@@ -1,0 +1,25 @@
+function VALUE-ITERATION(mdp,ϵ) returns a utility function
+    inputs: 
+        mdp, an MDP with 
+            states S, 
+            actions A(s), 
+            transition model P(s′|s, a), 
+            rewards R(s), 
+            discount γ
+        
+        ϵ, the maximum error allowed in the utility of any state
+    
+    local variables: 
+        U,U′, vectors of utilities for states in S, initially zero
+        δ, the maximum change in the utility of any state in an iteration
+        
+    repeat
+        U ← U′; δ ← 0
+
+        for each state s in S do 
+            U′[s] ← R(s) + γ max a∈A(s) ∑s′P(s′|s, a)U[s′]
+            if |U′[s]−U[s]| > δ then δ ← |U′[s]−U[s]|
+
+    until δ < ϵ(1−γ)/γ
+    
+    return U
