@@ -1,9 +1,9 @@
-from enum import Enum
+import enum
 
 from assignment_1.MDP import MarkovDecisionProcess
 
 
-class MazeAction(Enum):
+class MazeAction(enum.Enum):
     MOVE_UP = enum.auto()
     MOVE_DOWN = enum.auto()
     MOVE_LEFT = enum.auto()
@@ -15,17 +15,25 @@ class Maze(MarkovDecisionProcess):
         self.grid = grid
         self.reward_mapping = reward_mapping
         self.current_state = starting_point
-        self.discount_factor
+        self.discount_factor = discount_factor
 
         self.width = len(grid)
         self.height = len(grid[0])
 
-        possible_states = [
-            { 'x': x, 'y': y }
+        possible_states = {
+            (x, y): {
+                'x': x,  # repetition of value makes it easier later
+                'y': y,  # repetition of value makes it easier later
+                'reward': self.reward_mapping[self.grid[x][y]],
+                'current_utility': 0,
+                'previous_utility': 0,
+                'optimal_action': None,
+            }
+
             for x in range(self.width)
             for y in range(self.height)
             if self.grid[x][y] != 'w'
-        ]
+        }
 
         possible_actions = [
             MazeAction.MOVE_UP,
@@ -36,146 +44,119 @@ class Maze(MarkovDecisionProcess):
 
         super().__init__(possible_states, possible_actions)
 
-    def transition_model(self, state, action, next_state) -> float:
+        for state_position in self.states:
+            self.states[state_position]['action_next_state_map'] = \
+                self._form_action_next_state_map(state_position)
+
+    def _form_action_next_state_map(self, state):
+        """
+        state (tuple): x, y position
+
+        returns:
+        a dictionary that maps each action to the next possible states,
+        along with the probability of each next possible state occuring,
+        for the given state
+        """
+        return {
+            action: self._get_next_states(state, action)
+            for action in self.actions
+        }
+
+    def _get_next_states(self, state, action: MazeAction):
+        """
+        state (tuple): x, y position
+        action (MazeAction): action to take at the given state
+
+        returns:
+        ((0.8, intended_state), (0.1, unintended_state_1), (0.1, unintended_state_2))
+        """
         if action is MazeAction.MOVE_UP:
-            if state['x'] == next_state['x'] and state['y'] == next_state['y'] - 1:
-                return 0.8  # move up
 
-            elif state['x'] == next_state['x'] - 1 and state['y'] == next_state['y']:
-                return 0.1  # move left
+            above_state = (state[0], state[1] - 1)
+            if above_state not in self.states:
+                above_state = state
 
-            elif state['x'] == next_state['x'] + 1 and state['y'] == next_state['y']:
-                return 0.1  # move right
+            left_state = (state[0] - 1, state[1])
+            if left_state not in self.states:
+                left_state = state
 
-            else:
-                return 0
+            right_state = (state[0] + 1, state[1])
+            if right_state not in self.states:
+                right_state = state
+
+            next_states = ((0.8, above_state), (0.1, left_state), (0.1, right_state))
 
         elif action is MazeAction.MOVE_DOWN:
-            if state['x'] == next_state['x'] and state['y'] == next_state['y'] + 1:
-                return 0.8  # move down
 
-            elif state['x'] == next_state['x'] - 1 and state['y'] == next_state['y']:
-                return 0.1  # move left
+            below_state = (state[0], state[1] + 1)
+            if below_state not in self.states:
+                below_state = state
 
-            elif state['x'] == next_state['x'] + 1 and state['y'] == next_state['y']:
-                return 0.1  # move right
+            left_state = (state[0] - 1, state[1])
+            if left_state not in self.states:
+                left_state = state
 
-            else:
-                return 0
+            right_state = (state[0] + 1, state[1])
+            if right_state not in self.states:
+                right_state = state
+
+            next_states = ((0.8, below_state), (0.1, left_state), (0.1, right_state))
 
         elif action is MazeAction.MOVE_LEFT:
-            if state['x'] == next_state['x'] - 1 and state['y'] == next_state['y']:
-                return 0.8  # move left
 
-            if state['x'] == next_state['x'] and state['y'] == next_state['y'] - 1:
-                return 0.1  # move up
+            left_state = (state[0] - 1, state[1])
+            if left_state not in self.states:
+                left_state = state
 
-            if state['x'] == next_state['x'] and state['y'] == next_state['y'] + 1:
-                return 0.1  # move down
+            above_state = (state[0], state[1] - 1)
+            if above_state not in self.states:
+                above_state = state
 
-            else:
-                return 0
+            below_state = (state[0], state[1] + 1)
+            if below_state not in self.states:
+                below_state = state
+
+            next_states = ((0.8, left_state), (0.1, above_state), (0.1, below_state))
 
         else:  # action is MazeAction.MOVE_RIGHT
-            if state['x'] == next_state['x'] + 1 and state['y'] == next_state['y']:
-                return 0.8  # move right
 
-            if state['x'] == next_state['x'] and state['y'] == next_state['y'] - 1:
-                return 0.1  # move up
+            right_state = (state[0] - 1, state[1])
+            if right_state not in self.states:
+                right_state = state
 
-            if state['x'] == next_state['x'] and state['y'] == next_state['y'] + 1:
-                return 0.1  # move down
+            above_state = (state[0], state[1] - 1)
+            if above_state not in self.states:
+                above_state = state
 
-            else:
-                return 0
+            below_state = (state[0], state[1] + 1)
+            if below_state not in self.states:
+                below_state = state
+
+            next_states = ((0.8, right_state), (0.1, above_state), (0.1, below_state))
+
+        return next_states
+
+    def transition_model(self, state, action, next_state) -> float:
+        """
+        state (tuple): x, y position
+        action (MazeAction): action to take at the given state
+        next_state (tuple): x, y position
+
+        return:
+        probability which ranges from 0 to 1, inclusive (float)
+        """
+        action_next_state_map = self.states[state]['action_next_state_map']
+        possible_next_states = action_next_state_map[action]
+
+        for probability, possible_next_state in possible_next_states:
+            if next_state == possible_next_state:
+                return probability
+        
+        return 0
 
     def reward(self, state):
-        square_colour = grid[state['x']][state['y']]
-        return self.reward_mapping(square_colour)
-
-    def get_next_squares(self, square, action: MazeAction):
-        if action is MazeAction.MOVE_UP:  # up, left or right
-            return self._get_next_action_valid_squares(
-                square, 
-                invalid_move_direction=MazeAction.MOVE_DOWN,
-            )
-
-        elif action is MazeAction.MOVE_DOWN:  # down, left or right
-            return self._get_next_action_valid_squares(
-                square, 
-                invalid_move_direction=MazeAction.MOVE_UP,
-            )
-
-        elif action is MazeAction.MOVE_LEFT:  # left, up or down
-            return self._get_next_action_valid_squares(
-                square, 
-                invalid_move_direction=MazeAction.MOVE_RIGHT,
-            )
-
-        else:  # action is MazeAction.MOVE_RIGHT - right, up or down
-            return self._get_next_action_valid_squares(
-                square, 
-                invalid_move_direction=MazeAction.MOVE_LEFT,
-            )
-
-
-    def _get_next_action_valid_squares(
-        self, 
-        square, 
-        invalid_move_direction: MazeAction,
-    ):
-        possible_squares = []
-
-        if invalid_move_direction is not MazeAction.MOVE_UP:
-            cannot_move_up = square['y'] == 0 or \
-                self.grid[square['x']][square['y'] - 1] == 'w'
-
-            if cannot_move_up:  # stay in the same spot
-                possible_squares.append(square)
-
-            else:  # can move to square above
-                possible_squares.append({ 
-                    'x': square['x'],
-                    'y': square['y'] - 1,
-                })
-
-        if invalid_move_direction is not MazeAction.MOVE_DOWN:
-            cannot_move_down = square['y'] == self.height - 1 or \
-                self.grid[square['x']][square['y'] + 1] == 'w'
-
-            if cannot_move_down:  # stay in the same spot
-                possible_squares.append(square)
-
-            else:  # can move to square below
-                possible_squares.append({ 
-                    'x': square['x'],
-                    'y': square['y'] + 1,
-                })
-
-        if invalid_move_direction is not MazeAction.MOVE_LEFT:
-            cannot_move_left = square['x'] == 0 or \
-                self.grid[square['x'] - 1][square['y']] == 'w'
-
-            if cannot_move_left:  # stay in the same spot
-                possible_squares.append(square)
-
-            else:  # can move to square to the left
-                possible_squares.append({ 
-                    'x': square['x'] - 1,
-                    'y': square['y'],
-                })
-
-        if invalid_move_direction is not MazeAction.MOVE_RIGHT:
-            cannot_move_right = square['x'] == self.width - 1 or \
-                self.grid[square['x'] + 1][square['y']] == 'w'
-
-            if cannot_move_right:  # stay in the same spot
-                possible_squares.append(square)
-
-            else:  # can move to square to the right
-                possible_squares.append({ 
-                    'x': square['x'] + 1,
-                    'y': square['y'],
-                })
-
-        return possible_squares
+        """
+        state (tuple): x, y position
+        """
+        colour = grid[state[0]][state[1]]
+        return self.reward_mapping[colour]
