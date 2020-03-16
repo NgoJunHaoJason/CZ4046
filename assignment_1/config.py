@@ -1,3 +1,6 @@
+"""
+Constants and configurations.
+"""
 # let maze be a 2D array
 GRID = [
     ['g', 'w', 'g', ' ', ' ', 'g'],
@@ -18,3 +21,5 @@ REWARD_MAPPING = {
 STARTING_POINT = { 'x': 3, 'y': 2 }  # 4th row, 3rd column
 
 DISCOUNT_FACTOR = 0.99
+
+RESULTS_DIR_PATH = 'assignment_1/results/'

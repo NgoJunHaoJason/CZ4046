@@ -16,6 +16,7 @@ from assignment_1.maze import MazeAction
 def value_iteration(
     mdp: MarkovDecisionProcess,
     max_error=1e-10,
+    verbose=False,
 ):
     """
     params:
@@ -25,8 +26,8 @@ def value_iteration(
         transition model P(s′|s, a), 
         rewards R(s), 
         discount γ
-
     - max_error (float): the maximum error allowed in the utility of any state
+    - verbose (bool): determine whether to print information
 
     return: {
         'utilities': {
@@ -52,8 +53,8 @@ def value_iteration(
         new_utilities[state_position] = 0
         optimal_policy[state_position] = None
 
-        # utility start at index 1 (iteration number 1)
-        iteration_utilities[state_position] = [None]
+        # start with empty list since it is updated at start of iteration
+        iteration_utilities[state_position] = []
 
     has_converged = False
     num_iterations = 0
@@ -87,11 +88,12 @@ def value_iteration(
 
         num_iterations += 1
 
-        print(
-            'iteration:', num_iterations,
-            '-maximum change in the utility of any state:', 
-            '{:.6f}'.format(max_utility_change),
-        )
+        if verbose:
+            print(
+                'iteration:', num_iterations,
+                '-maximum change in the utility of any state:', 
+                '{:.6f}'.format(max_utility_change),
+            )
 
         # until δ < ϵ(1−γ)/γ
         has_converged = max_utility_change < \
@@ -100,7 +102,7 @@ def value_iteration(
     # algorithm: return U
     #
     # in my implementation, I return the optimal policy and number of iterations
-    # as well as they will come in useful later
+    # as well, as they will come in useful later
     return {
         'utilities': current_utilities,
         'optimal_policy': optimal_policy,
@@ -109,7 +111,9 @@ def value_iteration(
     }
 
 
-def policy_iteration(mdp: MarkovDecisionProcess):
+# reference: policy iteration algorithm,
+# as shown in figure 17.7 of Artificial Intelligence: A Modern Approach
+def policy_iteration(mdp: MarkovDecisionProcess, verbose=False):
     """
     params:
     - mdp (MarkovDecisionProcess): an MDP with 
@@ -118,6 +122,7 @@ def policy_iteration(mdp: MarkovDecisionProcess):
         transition model P(s′|s, a), 
         rewards R(s), 
         discount γ
+    - verbose (bool): determines whether to print information
 
     return: {
         'utilities': {
@@ -143,17 +148,14 @@ def policy_iteration(mdp: MarkovDecisionProcess):
         utilities[state_position] = 0
         policy[state_position] = MazeAction.MOVE_UP
 
-        # utility start at index 1 (iteration number 1)
-        iteration_utilities[state_position] = [None]
+        # start with first utility in place since it is updated at end of iteration
+        iteration_utilities[state_position] = [0]
 
     unchanged = True
     num_iterations = 0
 
     # repeat
-    while unchanged:
-        for state_position in mdp.states:
-            iteration_utilities[state_position].append(utilities[state_position])
-
+    while unchanged:         
         # U ← POLICY-EVALUATION (π, U , mdp)
         utilities = _policy_evaluation(policy, utilities, mdp)
 
@@ -161,10 +163,19 @@ def policy_iteration(mdp: MarkovDecisionProcess):
 
         num_iterations += 1
 
+        if verbose:
+            print('iteration:', num_iterations)
+
+        for state_position in mdp.states:
+            iteration_utilities[state_position].append(utilities[state_position])
+            
+            if verbose:
+                print('at', state_position, '-best action:', policy[state_position])
+
     # algorithm: return π
     #
     # in my implementation, I return the utilities and number of iterations
-    # as well as they will come in useful later
+    # as well, as they will come in useful later
     return {
         'utilities': utilities,
         'optimal_policy': policy,
@@ -221,7 +232,7 @@ def _policy_evaluation(
     mdp: MarkovDecisionProcess
 ) -> dict:
     """
-    Based on Bellman equation.
+    Simplified version of Bellman equation.
 
     params:
     - policy: {
@@ -306,7 +317,7 @@ def _policy_improvement(
         else:
             updated_policy[state_position] = policy[state_position]
 
-        return (updated_policy, unchanged)
+    return (updated_policy, unchanged)
 
 
 def _get_expected_utility(
