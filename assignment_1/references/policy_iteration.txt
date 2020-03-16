@@ -1,0 +1,21 @@
+function POLICY-ITERATION (mdp) returns a policy
+    inputs: mdp, an MDP with states S , actions A(s), transition model P (s'|s, a)
+    local variables: 
+        U , a vector of utilities for states in S , initially zero
+        π, a policy vector indexed by state, initially random
+
+    repeat
+        U ← POLICY-EVALUATION (π, U , mdp)
+        unchanged? ← true
+
+        for each state s in S do
+            if max a∈A(s) ∑s′ P (s'|s, a) U [s'] > ∑s′ P (s'|s, π[s]) U [s'] then do
+                π[s] ← argmax a∈A(s) ∑s′ P (s'|s, a) U [s']
+                unchanged? ← false
+    until unchanged?
+    return π
+
+function POLICY-EVALUATION (π, U , mdp) returns a utility function
+    for each state s in S do
+        U_i+1(s) ← R(s) + γ ∑s′P (s'|s, π_i(s)) U_i(s')
+    return U_i+1

@@ -31,3 +31,13 @@ class MarkovDecisionProcess:
         returns: the reward obtained at the current state
         """
         pass
+
+    def get_next_states(self, state, action):
+        """
+        params:
+        - state (tuple): x, y position
+        - action (MazeAction): action to take at the given state
+
+        return: possible next states
+        """
+        pass

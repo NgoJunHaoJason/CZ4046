@@ -125,12 +125,11 @@ class Maze(MarkovDecisionProcess):
         }
         """
         return {
-            action: self._get_next_states(state, action)
+            action: self.get_next_states(state, action)
             for action in actions
         }
 
-    # helper function - to be called during instantiation
-    def _get_next_states(self, state, action: MazeAction):
+    def get_next_states(self, state, action: MazeAction):
         """
         params:
         - state (tuple): x, y position
