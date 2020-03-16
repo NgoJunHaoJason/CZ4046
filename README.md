@@ -7,7 +7,7 @@ Python version: 3.7.4
 ## set-up (on linux machine)
 
 1. clone this repo
-2. change directory into this repo (`cd CZ4046`)
+2. change directory into this repo if you are not in it (`cd CZ4046`)
 3. create a virtual environment (`python3 -m venv venv`)
 4. activate virtual environment (`source venv/bin/activate`)
 5. install dependencies (`pip install -r requirements.txt`)
