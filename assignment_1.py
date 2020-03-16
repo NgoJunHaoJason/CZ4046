@@ -29,12 +29,15 @@ def solve_MDP():
         discount_factor=0.95
     )
 
-    result = value_iteration(maze, 1.4)
+    # result = value_iteration(maze, 1.4)
 
-    print(
-        'result for value iteration using discount factor of',
-        0.95, 'and maximum error threshold of', 1.4
-    )
+    # print(
+    #     'result for value iteration using discount factor of',
+    #     0.95, 'and maximum error threshold of', 1.4
+    # )
+
+    result = policy_iteration(maze)
+    
     print('number of iterations required:', result['num_iterations'])
 
     utilities, optimal_policy = result['utilities'], result['optimal_policy']
@@ -48,7 +51,7 @@ def solve_MDP():
     }
 
     print('utility for each state (row, column)')
-    for state_position in utilities:
+    for state_position in maze.states:
         if state_position[1] == 0:
             print()
 
@@ -57,8 +60,10 @@ def solve_MDP():
             '- utility:', '{:.3f}'.format(utilities[state_position]),
         )
 
-        optimal_policy_grid[state_position[0]][state_position[1]] = \
-            action_text_map[optimal_policy[state_position]]
+        action = optimal_policy.get(state_position)
+        action_symbol = action_text_map.get(action, 'x')
+
+        optimal_policy_grid[state_position[0]][state_position[1]] = action_symbol
 
     pprint(optimal_policy_grid)
 

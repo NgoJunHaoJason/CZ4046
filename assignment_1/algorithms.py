@@ -295,7 +295,8 @@ def _policy_improvement(
         utility = _get_expected_utility(
             mdp,
             state_position,
-            policy[state_position]
+            policy[state_position],
+            utilities
         )
 
         # if max a∈A(s) ∑s′ P (s'|s, a) U [s'] > ∑s′ P (s'|s, π[s]) U [s'] then do
