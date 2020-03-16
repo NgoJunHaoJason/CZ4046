@@ -37,10 +37,19 @@ def _bellman_equation(
         expected_utility = 0
 
         for intended_next_state_position in action_next_state_map[action]:
+            # actual state used to calculate utility,
+            # since intended state may be invalid (wall / out of bounds)
             actual_next_state_position = \
                 action_next_state_map[action][intended_next_state_position]['actual']
             next_state_utility = current_utilities[actual_next_state_position]
 
+            # The intended state to move into is used (even if it is invalid).
+            # If there are more than 1 wall / border surrounding current state,
+            # there will be an overlap in next states, since they will end up
+            # remaining in the current state.
+            # If next_state_1 == next_state_2, the transition model defined
+            # will fail to calculate the correct probability, so intended state
+            # is used instead of actual state
             probability = mdp.transition_model(
                 state_position,
                 action,
@@ -84,15 +93,24 @@ def value_iteration(
             (x, y): best action to take at this state (MazeAction)
         },
         'num_iterations': num_iterations (int),
+        'iteration_utilities': {
+            (x, y): [utility for each iteration (float)]
+        }
     }
     """
     # U,U′, vectors of utilities for states in S, initially zero
     current_utilities, new_utilities, optimal_policy = {}, {}, {}
 
+    # Plot of utility estimates as a function of the number of iterations
+    iteration_utilities = {}
+
     for state_position in mdp.states:
         current_utilities[state_position] = 0
         new_utilities[state_position] = 0
         optimal_policy[state_position] = None
+
+        # utility start at index 1 (iteration number 1)
+        iteration_utilities[state_position] = [None]
 
     has_converged = False
     num_iterations = 0
@@ -101,6 +119,7 @@ def value_iteration(
     while not has_converged:
         for state_position in mdp.states:
             current_utilities[state_position] = new_utilities[state_position]  # U ← U′
+            iteration_utilities[state_position].append(current_utilities[state_position])
 
         max_utility_change = 0  # δ ← 0
 
@@ -143,6 +162,7 @@ def value_iteration(
         'utilities': current_utilities,
         'optimal_policy': optimal_policy,
         'num_iterations': num_iterations,
+        'iteration_utilities': iteration_utilities,
     }
 
 

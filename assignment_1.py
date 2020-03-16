@@ -4,6 +4,7 @@ from pprint import pprint
 from assignment_1.algorithms import *
 from assignment_1.config import *
 from assignment_1.maze import *
+from assignment_1.plot import *
 
 
 def solve_MDP():
@@ -40,7 +41,7 @@ def solve_MDP():
 
     optimal_policy_grid = copy.deepcopy(maze.grid)
     action_text_map = {
-        MazeAction.MOVE_UP: '^',
+        MazeAction.MOVE_UP: '∧',
         MazeAction.MOVE_DOWN: 'v',
         MazeAction.MOVE_LEFT: '<',
         MazeAction.MOVE_RIGHT: '>',
@@ -60,6 +61,8 @@ def solve_MDP():
             action_text_map[optimal_policy[state_position]]
 
     pprint(optimal_policy_grid)
+
+    plot_utility_vs_iteration(result['iteration_utilities'])
 
 
 if __name__ == '__main__':
