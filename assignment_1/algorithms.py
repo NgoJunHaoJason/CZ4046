@@ -113,7 +113,11 @@ def value_iteration(
 
 # reference: policy iteration algorithm,
 # as shown in figure 17.7 of Artificial Intelligence: A Modern Approach
-def policy_iteration(mdp: MarkovDecisionProcess, verbose=False):
+def policy_iteration(
+    mdp: MarkovDecisionProcess, 
+    num_policy_evaluation: int=1,
+    verbose: bool=False
+):
     """
     params:
     - mdp (MarkovDecisionProcess): an MDP with 
@@ -122,6 +126,7 @@ def policy_iteration(mdp: MarkovDecisionProcess, verbose=False):
         transition model P(s′|s, a), 
         rewards R(s), 
         discount γ
+    - num_policy_evaluation (int): number of times to do policy evaluation (k)
     - verbose (bool): determines whether to print information
 
     return: {
@@ -157,7 +162,12 @@ def policy_iteration(mdp: MarkovDecisionProcess, verbose=False):
     # repeat
     while unchanged:         
         # U ← POLICY-EVALUATION (π, U , mdp)
-        utilities = _policy_evaluation(policy, utilities, mdp)
+        utilities, new_iteration_utilities = _policy_evaluation(
+            mdp, 
+            policy, 
+            utilities, 
+            num_policy_evaluation, 
+        )
 
         policy, unchanged = _policy_improvement(mdp, policy, utilities)
 
@@ -167,7 +177,7 @@ def policy_iteration(mdp: MarkovDecisionProcess, verbose=False):
             print('iteration:', num_iterations)
 
         for state_position in mdp.states:
-            iteration_utilities[state_position].append(utilities[state_position])
+            iteration_utilities[state_position].extend(new_iteration_utilities[state_position])
             
             if verbose:
                 print('at', state_position, '-best action:', policy[state_position])
@@ -227,49 +237,66 @@ def _bellman_equation(
 
 
 def _policy_evaluation(
+    mdp: MarkovDecisionProcess,
     policy: dict, 
     utilities: dict, 
-    mdp: MarkovDecisionProcess
-) -> dict:
+    num_policy_evaluation: int,
+):
     """
     Simplified version of Bellman equation.
 
     params:
-    - policy: {
-        (x, y): best action to take at this state (MazeAction)
-    }
-    - utilities: {
-        (x, y): utility value (float)
-    }
     - mdp (MarkovDecisionProcess): an MDP with 
         states S, 
         actions A(s), 
         transition model P(s′|s, a), 
         rewards R(s), 
         discount γ
-
-    return: {
-        (x, y): updated utility value (float)
+    - policy: {
+        (x, y): best action to take at this state (MazeAction)
     }
+    - utilities: {
+        (x, y): utility value (float)
+    }
+    - num_policy_evaluation (int): number of times to do policy evaluation (k)
+
+    return: (
+        { (x, y): updated utility value (float) },
+        { (x, y): [utility for each iteration (float)] }
+    )
     """
-    updated_utilities = {}
+    current_utilities, updated_utilities = {}, {}
+    new_iteration_utilities = {}
 
-    # for each state s in S do
     for state_position in mdp.states:
-        reward = mdp.reward_function(state_position)
+        # U_i ← U
+        current_utilities[state_position] = utilities[state_position]
+        new_iteration_utilities[state_position] = []
 
-        # ∑s′P (s'|s, π_i(s)) U_i(s')
-        expected_utility = _get_expected_utility(
-            mdp,
-            state_position,
-            policy[state_position],
-            utilities
-        )
+    # for i in range(k)
+    for _ in range(num_policy_evaluation):
+        # for each state s in S do
+        for state_position in mdp.states:
+            reward = mdp.reward_function(state_position)
 
-        # U_i+1(s) ← R(s) + γ ∑s′P (s'|s, π_i(s)) U_i(s')
-        updated_utilities[state_position] = reward + mdp.discount * expected_utility
+            # ∑s′P (s'|s, π_i(s)) U_i(s')
+            expected_utility = _get_expected_utility(
+                mdp,
+                state_position,
+                policy[state_position],
+                current_utilities
+            )
 
-    return updated_utilities
+            # U_i+1(s) ← R(s) + γ ∑s′P (s'|s, π_i(s)) U_i(s')
+            updated_utilities[state_position] = reward + mdp.discount * expected_utility
+
+        # U_i ← U_i+1
+        for state_position in mdp.states:
+            current_utilities[state_position] = updated_utilities[state_position]
+            new_iteration_utilities[state_position].append(current_utilities[state_position])
+            
+
+    return (current_utilities, new_iteration_utilities)
 
 
 def _policy_improvement(

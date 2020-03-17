@@ -37,7 +37,7 @@ def solve_MDP():
         starting_point=STARTING_POINT,
         discount_factor=0.95
     )
-    result = value_iteration(maze, 1.4)
+    result = value_iteration(maze, max_error=1.4)
 
     _show_maze_result(maze, result, 'approximate_reference_utilities_result.txt')
 
@@ -54,7 +54,7 @@ def solve_MDP():
         starting_point=STARTING_POINT,
         discount_factor=DISCOUNT_FACTOR
     )
-    result = policy_iteration(maze)
+    result = policy_iteration(maze, num_policy_evaluation=11)
     
     _show_maze_result(maze, result, 'policy_iteration_result.txt')
 

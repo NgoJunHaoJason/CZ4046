@@ -1,40 +1,40 @@
 number of iterations required: 1
 ---utility for each state (row, column)---
-(0, 0) - utility: 1.000
-(0, 2) - utility: 1.000
-(0, 3) - utility: -0.040
-(0, 4) - utility: -0.040
-(0, 5) - utility: 1.000
-(1, 0) - utility: -0.040
-(1, 1) - utility: -1.000
-(1, 2) - utility: -0.040
-(1, 3) - utility: 1.000
-(1, 5) - utility: -1.000
-(2, 0) - utility: -0.040
-(2, 1) - utility: -0.040
-(2, 2) - utility: -1.000
-(2, 3) - utility: -0.040
-(2, 4) - utility: 1.000
-(2, 5) - utility: -0.040
-(3, 0) - utility: -0.040
-(3, 1) - utility: -0.040
-(3, 2) - utility: -0.040
-(3, 3) - utility: -1.000
-(3, 4) - utility: -0.040
-(3, 5) - utility: 1.000
-(4, 0) - utility: -0.040
-(4, 4) - utility: -1.000
-(4, 5) - utility: -0.040
-(5, 0) - utility: -0.040
-(5, 1) - utility: -0.040
-(5, 2) - utility: -0.040
-(5, 3) - utility: -0.040
-(5, 4) - utility: -0.040
-(5, 5) - utility: -0.040
+(0, 0) - utility: 7.192
+(0, 2) - utility: 6.451
+(0, 3) - utility: 5.416
+(0, 4) - utility: 4.829
+(0, 5) - utility: 4.599
+(1, 0) - utility: 2.083
+(1, 1) - utility: 0.461
+(1, 2) - utility: 0.628
+(1, 3) - utility: 1.713
+(1, 5) - utility: -3.258
+(2, 0) - utility: 0.213
+(2, 1) - utility: 0.053
+(2, 2) - utility: -1.027
+(2, 3) - utility: -0.927
+(2, 4) - utility: 0.024
+(2, 5) - utility: -0.473
+(3, 0) - utility: -0.297
+(3, 1) - utility: -0.306
+(3, 2) - utility: -0.435
+(3, 3) - utility: -1.602
+(3, 4) - utility: -1.829
+(3, 5) - utility: -0.895
+(4, 0) - utility: -0.401
+(4, 4) - utility: -5.407
+(4, 5) - utility: -4.383
+(5, 0) - utility: -0.417
+(5, 1) - utility: -0.418
+(5, 2) - utility: -0.418
+(5, 3) - utility: -0.419
+(5, 4) - utility: -0.949
+(5, 5) - utility: -1.281
 ---optimal policy grid (w = wall)---
-[['<', 'w', '∧', '∧', 'v', '<'],
- ['<', '∧', 'v', 'v', 'w', '<'],
- ['∧', '∧', '∧', 'v', '<', '>'],
- ['∧', '∧', '∧', '∧', 'v', 'v'],
- ['∧', 'w', 'w', 'w', '∧', '<'],
- ['∧', '∧', '∧', '∧', '>', '∧']]
+[['<', 'w', '<', '∧', '∧', '<'],
+ ['<', '∧', '<', '<', 'w', '<'],
+ ['<', '<', '∧', '<', '<', '∧'],
+ ['<', '<', '∧', '∧', '<', '<'],
+ ['<', 'w', 'w', 'w', '>', '<'],
+ ['∧', '∧', '∧', '∧', '>', '>']]

@@ -16,6 +16,11 @@ function POLICY-ITERATION (mdp) returns a policy
     return π
 
 function POLICY-EVALUATION (π, U , mdp) returns a utility function
-    for each state s in S do
-        U_i+1(s) ← R(s) + γ ∑s′P (s'|s, π_i(s)) U_i(s')
-    return U_i+1
+    U_i ← U
+
+    for i in range(k)
+        for each state s in S do
+            U_i+1(s) ← R(s) + γ ∑s′P (s'|s, π_i(s)) U_i(s')
+        U_i ← U_i+1
+    
+    return U_i
