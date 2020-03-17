@@ -15,7 +15,7 @@ from assignment_1.maze import MazeAction
 # as shown in figure 17.4 of Artificial Intelligence: A Modern Approach
 def value_iteration(
     mdp: MarkovDecisionProcess,
-    max_error=1e-10,
+    max_error=0.1,
     verbose=False,
 ):
     """

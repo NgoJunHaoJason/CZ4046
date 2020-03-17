@@ -8,6 +8,9 @@ from assignment_1.base import MarkovDecisionProcess
 
 
 class MazeAction(enum.Enum):
+    """
+    Actions that can taken in a Maze.
+    """
     MOVE_UP = enum.auto()
     MOVE_DOWN = enum.auto()
     MOVE_LEFT = enum.auto()
