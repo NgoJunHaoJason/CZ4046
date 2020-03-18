@@ -1,10 +1,11 @@
 import copy
 from pprint import pprint
 
-from assignment_1.algorithms import *
+from assignment_1.algorithms import value_iteration, policy_iteration
 from assignment_1.config import *
-from assignment_1.maze import *
-from assignment_1.plot import *
+from assignment_1.grid import generate_maze
+from assignment_1.maze import Maze, MazeAction
+from assignment_1.plot import plot_utility_vs_iteration
 
 
 def solve_MDP():
@@ -18,7 +19,7 @@ def solve_MDP():
         starting_point=STARTING_POINT,
         discount_factor=DISCOUNT_FACTOR
     )
-    result = value_iteration(maze, max_error=20)
+    result = value_iteration(maze, max_error=MAX_ERROR)
 
     _show_maze_result(maze, result, 'value_iteration_result.txt')
 
@@ -27,7 +28,6 @@ def solve_MDP():
         save_file_name='value_iteration_utilities.png'
     )
 
-
     # For approximation of reference utilities given in instructions,
     # use discount factor of 0.95 and maximum error threshold of 1.4.
     # Values obtained through trial and error.
@@ -35,9 +35,9 @@ def solve_MDP():
         grid=GRID,
         reward_mapping=REWARD_MAPPING,
         starting_point=STARTING_POINT,
-        discount_factor=0.95
+        discount_factor=REFERENCE_DISCOUNT_FACTOR
     )
-    result = value_iteration(maze, max_error=1.4)
+    result = value_iteration(maze, max_error=REFERENCE_MAX_ERROR)
 
     _show_maze_result(maze, result, 'approximate_reference_utilities_result.txt')
 
@@ -45,7 +45,6 @@ def solve_MDP():
         result['iteration_utilities'],
         save_file_name='approximate_reference_utilities.png'
     )
-
 
     # policy iteration
     maze = Maze(
@@ -61,6 +60,46 @@ def solve_MDP():
     plot_utility_vs_iteration(
         result['iteration_utilities'],
         save_file_name='policy_iteration_utilities.png'
+    )
+
+    bonus_grid_length = 100
+    bonus_grid = generate_maze(bonus_grid_length)
+
+    print('bonus grid, length =', bonus_grid_length)
+    with open(RESULTS_DIR_PATH + 'bonus_maze.txt', 'w') as file:
+        pprint(bonus_grid, file)
+
+    bonus_maze = Maze(
+        grid=bonus_grid,
+        reward_mapping=REWARD_MAPPING,
+        starting_point=STARTING_POINT,
+        discount_factor=DISCOUNT_FACTOR
+    )
+
+    result = value_iteration(bonus_maze, max_error=MAX_ERROR, verbose=True)
+
+    _show_maze_result(
+        bonus_maze, 
+        result, 
+        'bonus_value_iteration_result.txt'
+    )
+
+    plot_utility_vs_iteration(
+        result['iteration_utilities'],
+        'bonus_value_iteration_utilities.png'
+    )
+
+    result = policy_iteration(bonus_maze, NUM_POLICY_EVALUATION, verbose=True)
+
+    _show_maze_result(
+        bonus_maze, 
+        result, 
+        'bonus_policy_iteration_result.txt'
+    )
+
+    plot_utility_vs_iteration(
+        result['iteration_utilities'],
+        'bonus_policy_iteration_utilities.png'
     )
 
 

@@ -353,11 +353,6 @@ def _policy_improvement(
         if max_expected_utility > utility:
             updated_policy[state_position] = best_action
             unchanged = False
-            print(
-                state_position, '\n',
-                policy[state_position], '- current utility:', utility, '\n',
-                best_action, '- new utility:', max_expected_utility
-            )
         else:
             updated_policy[state_position] = policy[state_position]
 
