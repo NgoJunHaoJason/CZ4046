@@ -18,7 +18,7 @@ def solve_MDP():
         starting_point=STARTING_POINT,
         discount_factor=DISCOUNT_FACTOR
     )
-    result = value_iteration(maze)
+    result = value_iteration(maze, max_error=20)
 
     _show_maze_result(maze, result, 'value_iteration_result.txt')
 
@@ -54,7 +54,7 @@ def solve_MDP():
         starting_point=STARTING_POINT,
         discount_factor=DISCOUNT_FACTOR
     )
-    result = policy_iteration(maze, num_policy_evaluation=11)
+    result = policy_iteration(maze, num_policy_evaluation=100)
     
     _show_maze_result(maze, result, 'policy_iteration_result.txt')
 

@@ -5,8 +5,6 @@ In this file:
 - value iteration
 - policy iteration
 """
-from functools import reduce
-
 from assignment_1.base import MarkovDecisionProcess
 from assignment_1.maze import MazeAction
 
@@ -15,7 +13,7 @@ from assignment_1.maze import MazeAction
 # as shown in figure 17.4 of Artificial Intelligence: A Modern Approach
 def value_iteration(
     mdp: MarkovDecisionProcess,
-    max_error=0.1,
+    max_error=1,
     verbose=False,
 ):
     """
@@ -156,11 +154,11 @@ def policy_iteration(
         # start with first utility in place since it is updated at end of iteration
         iteration_utilities[state_position] = [0]
 
-    unchanged = True
+    unchanged = False
     num_iterations = 0
 
     # repeat
-    while unchanged:         
+    while not unchanged:
         # U ← POLICY-EVALUATION (π, U , mdp)
         utilities, new_iteration_utilities = _policy_evaluation(
             mdp, 
@@ -171,7 +169,8 @@ def policy_iteration(
 
         policy, unchanged = _policy_improvement(mdp, policy, utilities)
 
-        num_iterations += 1
+        num_iterations += num_policy_evaluation
+        print('unchanged:', unchanged, 'at iteration:', num_iterations)
 
         if verbose:
             print('iteration:', num_iterations)
@@ -324,12 +323,25 @@ def _policy_improvement(
 
     # for each state s in S do
     for state_position in mdp.states:
-        new_utility, new_action = _bellman_equation(
-            mdp,
-            state_position,
-            utilities, 
-        )
+        # get max a∈A(s) ∑s′ P (s'|s, a) U [s']
+        max_expected_utility = float('-inf')
+        best_action = None
 
+        action_next_state_map = mdp.states[state_position]
+
+        for action in action_next_state_map:
+            expected_utility = _get_expected_utility(
+                mdp,
+                state_position,
+                action,
+                utilities
+            )
+
+        if expected_utility > max_expected_utility:
+            max_expected_utility = expected_utility
+            best_action = action
+
+        # get ∑s′ P (s'|s, π[s]) U [s']
         utility = _get_expected_utility(
             mdp,
             state_position,
@@ -338,9 +350,14 @@ def _policy_improvement(
         )
 
         # if max a∈A(s) ∑s′ P (s'|s, a) U [s'] > ∑s′ P (s'|s, π[s]) U [s'] then do
-        if new_utility > utility:
-            updated_policy[state_position] = new_action
+        if max_expected_utility > utility:
+            updated_policy[state_position] = best_action
             unchanged = False
+            print(
+                state_position, '\n',
+                policy[state_position], '- current utility:', utility, '\n',
+                best_action, '- new utility:', max_expected_utility
+            )
         else:
             updated_policy[state_position] = policy[state_position]
 
