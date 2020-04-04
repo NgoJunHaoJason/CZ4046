@@ -236,7 +236,7 @@ public class ThreePrisonersDilemma {
 	/**
 	 * Switch choice if unsure
 	 */
-	class SwitchT4TPlayer extends Player {
+	class T4TSwitchPlayer extends Player {
 		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
 			// cooperate by default
 			if (n == 0)
@@ -253,7 +253,7 @@ public class ThreePrisonersDilemma {
 	/**
 	 * Stay with using the previous choice if unsure.
 	 */
-	class StayT4TPlayer extends Player {
+	class T4TStayPlayer extends Player {
 		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
 			// cooperate by default
 			if (n == 0)
@@ -264,6 +264,40 @@ public class ThreePrisonersDilemma {
 				return oppHistory1[n-1];
 
 			return myHistory[n-1];
+		}
+	}
+
+	/**
+	 * Cooperates if unsure.
+	 */
+	class T4TCoopPlayer extends Player {
+		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
+			// cooperate by default
+			if (n == 0)
+				return 0;
+
+			// https://www.sciencedirect.com/science/article/abs/pii/S0096300316301011
+			if (oppHistory1[n-1] == oppHistory2[n-1])
+				return oppHistory1[n-1];
+
+			return 0;
+		}
+	}
+
+	/**
+	 * Defects if unsure.
+	 */
+	class T4TDefectPlayer extends Player {
+		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
+			// cooperate by default
+			if (n == 0)
+				return 0;
+
+			// https://www.sciencedirect.com/science/article/abs/pii/S0096300316301011
+			if (oppHistory1[n-1] == oppHistory2[n-1])
+				return oppHistory1[n-1];
+
+			return 1;
 		}
 	}
 
@@ -358,29 +392,35 @@ public class ThreePrisonersDilemma {
 	 * entry to makePlayer, and change numPlayers.
 	 */
 
-	int numPlayers = 10; // includes custom Players
+	int numPlayers = 12; // includes custom Players
 
 	Player makePlayer(int which) {
 		switch (which) {
+			// not using RandomPlayer and FreakyPlayer
+			// randomness makes it difficult to judge outcome
 			case 0:
 				return new NicePlayer();
 			case 1:
 				return new NastyPlayer();
 			case 2:
-				return new T4TTolerantPlayer(); // RandomPlayer();
-			case 3:
 				return new TolerantPlayer();
-			case 4:
-				return new HistoryPlayer(); // FreakyPlayer();
-			case 5:
+			case 3:
 				return new T4TPlayer();
+			case 4:
+				return new T4TSwitchPlayer();
+			case 5:
+				return new T4TStayPlayer();
 			case 6:
-				return new T4TTolerantHistoryPlayer();
+				return new T4TCoopPlayer();
 			case 7:
-				return new SwitchT4TPlayer();
+				return new T4TDefectPlayer();
 			case 8:
-				return new StayT4TPlayer();
+				return new HistoryPlayer();
 			case 9:
+				return new T4TTolerantPlayer();
+			case 10:
+				return new T4TTolerantHistoryPlayer();
+			case 11:
 				return new T4TTolerantTakeAdvantagePlayer();
 		}
 		throw new RuntimeException("Bad argument passed to makePlayer");
