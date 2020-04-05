@@ -363,19 +363,19 @@ public class CustomThreePrisonersDilemma {
 	 * Combination of T4T, Tolerant and History
 	 */
 	class T4TTolerantHistoryPlayer extends Player {
-		private int numRoundsThreshold = 50; // half of total number of rounds
-
 		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
-			// cooperate by default
 			if (n == 0)
-				return 0;
+				return 0; // cooperate by default
+
+			if (n >= 109)
+				return 1; // opponents cannot retaliate
 
 			// https://www.sciencedirect.com/science/article/abs/pii/S0096300316301011
 			if (oppHistory1[n-1] == oppHistory2[n-1])
 				return oppHistory1[n-1];
 
-			// use n % 3 == 0 if total number of rounds not known
-			if (n < numRoundsThreshold) {
+			// n starts at 0, so compare history first
+			if (n % 2 != 0) { // odd round - be tolerant
 				// TolerantPlayer
 				int opponentCoop = 0;
 				int opponentDefect = 0;
@@ -394,7 +394,7 @@ public class CustomThreePrisonersDilemma {
 
 				return (opponentDefect > opponentCoop) ? 1 : 0;
 			}
-			// else: more than numRoundsThreshold rounds have been played
+			// else: even round - compare history
 			
 			// HistoryPlayer
 			int myNumDefections = 0;
