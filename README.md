@@ -7,7 +7,7 @@ Academic Year 2019-2020 Semester 2
 
 source code for CZ4046 Intelligent Agents assignments  
 
-## assignment 1
+## Assignment 1
 
 Grid world
 
@@ -28,10 +28,14 @@ Python version: 3.7.4
 2. run main program (`python3 assignment_1.py`)
 3. deactivate virtual environment when you no longer need it (`deactivate`)
 
-### details
+### assignment 1 details
 
 refer to [assignment 1 README](assignment_1/README.md)
 
-## assignment 2
+## Assignment 2
 
 Repeated Three Prisoners Dilemma
+
+### assignment 2 details
+
+refer to [assignment 2 README](assignment_2/README.md)
