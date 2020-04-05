@@ -7,17 +7,21 @@
  * Combination of Tit-for-tat and Tolerant.
  */
 public class Ngo_Jason_Player { // extends Player
-    private int numRoundsThreshold = 50;
+    private int numRoundsThreshold = 50; // half of total number of rounds
 
     int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
         // cooperate by default
         if (n == 0)
             return 0;
 
+        if (n > 90)
+            return 1;
+
         // https://www.sciencedirect.com/science/article/abs/pii/S0096300316301011
         if (oppHistory1[n-1] == oppHistory2[n-1])
             return oppHistory1[n-1];
 
+        // use n % 3 == 0 if total number of rounds not known
         if (n < numRoundsThreshold) {
             // TolerantPlayer
             int opponentCoop = 0;
