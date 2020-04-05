@@ -430,6 +430,14 @@ public class CustomThreePrisonersDilemma {
 					return 1; // take advantage
 			}
 
+			// Performance becomes worse when trying to punish others
+			// for punish self, for ownself defecting when taking advantage.
+
+			// if (oppHistory1[n-1] == oppHistory2[n-1])
+			// 	return oppHistory1[n-1];
+
+			// Use modified tit-for-tat instead.
+
 			if (oppHistory1[n-1] == 0 && oppHistory2[n-1] == 0)
 				return 0; // cooperate along
 
@@ -495,7 +503,7 @@ public class CustomThreePrisonersDilemma {
 	 * entry to makePlayer, and change numPlayers.
 	 */
 
-	int numPlayers = 16; // includes custom Players
+	int numPlayers = 15; // includes custom Players
 
 	Player makePlayer(int which) {
 		switch (which) {
@@ -507,32 +515,30 @@ public class CustomThreePrisonersDilemma {
 			case 1:
 				return new NastyPlayer();
 			case 2:
-				return new RandomPlayer();
-			case 3:
 				return new TolerantPlayer();
-			case 4:
+			case 3:
 				return new T4TSwitchPlayer();
-			case 5:
+			case 4:
 				return new T4TStayPlayer();
-			case 6:
+			case 5:
 				return new T4TCoopPlayer();
-			case 7:
+			case 6:
 				return new T4TDefectPlayer();
-			case 8:
+			case 7:
 				return new HistoryPlayer();
-			case 9:
+			case 8:
 				return new LessTolerantPlayer();
-			case 10:
+			case 9:
 				return new SwitchPlayer();
-			case 11:
+			case 10:
 				return new T4TTolerantPlayer();
-			case 12:
+			case 11:
 				return new T4THistoryPlayer();
-			case 13:
+			case 12:
 				return new T4TLessTolerantPlayer();
-			case 14:
+			case 13:
 				return new T4TTolerantHistoryPlayer();
-			case 15:
+			case 14:
 				return new T4TTolerantTakeAdvantagePlayer();
 		}
 		throw new RuntimeException("Bad argument passed to makePlayer");
