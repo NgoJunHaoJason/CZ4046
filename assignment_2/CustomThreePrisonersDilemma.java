@@ -1,4 +1,4 @@
-public class ThreePrisonersDilemma {
+public class CustomThreePrisonersDilemma {
 
 	/*
 	 * This Java program models the two-player Prisoner's Dilemma game. We use the
@@ -131,109 +131,6 @@ public class ThreePrisonersDilemma {
 	}
 
 	/**
-	 * Combination of T4T and Tolerant
-	 */
-	class T4TTolerantPlayer extends Player {
-		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
-			// cooperate by default
-			if (n == 0)
-				return 0;
-
-			// https://www.sciencedirect.com/science/article/abs/pii/S0096300316301011
-			if (oppHistory1[n-1] == oppHistory2[n-1])
-				return oppHistory1[n-1];
-
-			// TolerantPlayer
-			int opponentCoop = 0;
-			int opponentDefect = 0;
-
-			for (int i = 0; i < n; i++) {
-				if (oppHistory1[i] == 0)
-					opponentCoop += 1;
-				else
-					opponentDefect += 1;
-
-				if (oppHistory2[i] == 0)
-					opponentCoop += 1;
-				else
-					opponentDefect += 1;
-			}
-
-			return (opponentDefect > opponentCoop) ? 1 : 0;
-		}
-	}
-
-	/**
-	 * Compares player history, then cooperates if score is >= others, else defect
-	 */
-	class HistoryPlayer extends Player {
-		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
-			int myScore = 0;
-			int oppScore1 = 0;
-			int oppScore2 = 0;
-
-			for (int index = 0; index < n; ++index) {
-				myScore += myHistory[index];
-				oppScore1 += oppHistory1[index];
-				oppScore2 += oppHistory2[index];
-			}
-
-			return (myScore >= oppScore1 && myScore >= oppScore2) ? 0 : 1;
-		}
-	}
-
-	/**
-	 * Combination of T4T, Tolerant and History
-	 */
-	class T4TTolerantHistoryPlayer extends Player {
-		private int numRoundsThreshold = 5;
-
-		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
-			// cooperate by default
-			if (n == 0)
-				return 0;
-
-			// https://www.sciencedirect.com/science/article/abs/pii/S0096300316301011
-			if (oppHistory1[n-1] == oppHistory2[n-1])
-				return oppHistory1[n-1];
-
-			if (n < numRoundsThreshold) {
-				// TolerantPlayer
-				int opponentCoop = 0;
-				int opponentDefect = 0;
-
-				for (int i = 0; i < n; i++) {
-					if (oppHistory1[i] == 0)
-						opponentCoop += 1;
-					else
-						opponentDefect += 1;
-
-					if (oppHistory2[i] == 0)
-						opponentCoop += 1;
-					else
-						opponentDefect += 1;
-				}
-
-				return (opponentDefect > opponentCoop) ? 1 : 0;
-			}
-			// else: more than numRoundsThreshold rounds have been played
-			
-			// HistoryPlayer
-			int myScore = 0;
-			int oppScore1 = 0;
-			int oppScore2 = 0;
-
-			for (int index = 0; index < n; ++index) {
-				myScore += myHistory[index];
-				oppScore1 += oppHistory1[index];
-				oppScore2 += oppHistory2[index];
-			}
-
-			return (myScore >= oppScore1 && myScore >= oppScore2) ? 0 : 1;
-		}
-	}
-
-	/**
 	 * Switch choice if unsure
 	 */
 	class T4TSwitchPlayer extends Player {
@@ -298,6 +195,212 @@ public class ThreePrisonersDilemma {
 				return oppHistory1[n-1];
 
 			return 1;
+		}
+	}
+
+	/**
+	 * Compares player history, then cooperates if score is >= others, else defect
+	 */
+	class HistoryPlayer extends Player {
+		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
+			int myScore = 0;
+			int oppScore1 = 0;
+			int oppScore2 = 0;
+
+			for (int index = 0; index < n; ++index) {
+				myScore += myHistory[index];
+				oppScore1 += oppHistory1[index];
+				oppScore2 += oppHistory2[index];
+			}
+
+			return (myScore >= oppScore1 && myScore >= oppScore2) ? 0 : 1;
+		}
+	}
+
+	/**
+	 * Less-tolerant than TolerantPlayer
+	 */
+	class LessTolerantPlayer extends Player {
+		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
+			// cooperate by default
+			if (n == 0)
+				return 0;
+
+			// TolerantPlayer
+			int opponentCoop = 0;
+			int opponentDefect = 0;
+
+			for (int i = 0; i < n; i++) {
+				if (oppHistory1[i] == 0)
+					opponentCoop += 1;
+				else
+					opponentDefect += 1;
+
+				if (oppHistory2[i] == 0)
+					opponentCoop += 1;
+				else
+					opponentDefect += 1;
+			}
+
+			return (opponentDefect >= opponentCoop) ? 1 : 0;
+		}
+	}
+
+	/**
+	 * Always switches choice.
+	 */
+	class SwitchPlayer extends Player {
+		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
+			// cooperate by default
+			if (n == 0)
+				return 0;
+			
+			return (myHistory[n-1] == 0) ? 1 : 0;
+		}
+	}
+
+	/**
+	 * Combination of T4T and Tolerant
+	 */
+	class T4TTolerantPlayer extends Player {
+		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
+			// cooperate by default
+			if (n == 0)
+				return 0;
+
+			// https://www.sciencedirect.com/science/article/abs/pii/S0096300316301011
+			if (oppHistory1[n-1] == oppHistory2[n-1])
+				return oppHistory1[n-1];
+
+			// TolerantPlayer
+			int opponentCoop = 0;
+			int opponentDefect = 0;
+
+			for (int i = 0; i < n; i++) {
+				if (oppHistory1[i] == 0)
+					opponentCoop += 1;
+				else
+					opponentDefect += 1;
+
+				if (oppHistory2[i] == 0)
+					opponentCoop += 1;
+				else
+					opponentDefect += 1;
+			}
+
+			return (opponentDefect > opponentCoop) ? 1 : 0;
+		}
+	}
+
+	/**
+	 * Combination of T4T and LessTolerant
+	 */
+	class T4TLessTolerantPlayer extends Player {
+		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
+			// cooperate by default
+			if (n == 0)
+				return 0;
+
+			// https://www.sciencedirect.com/science/article/abs/pii/S0096300316301011
+			if (oppHistory1[n-1] == oppHistory2[n-1])
+				return oppHistory1[n-1];
+
+			// TolerantPlayer
+			int opponentCoop = 0;
+			int opponentDefect = 0;
+
+			for (int i = 0; i < n; i++) {
+				if (oppHistory1[i] == 0)
+					opponentCoop += 1;
+				else
+					opponentDefect += 1;
+
+				if (oppHistory2[i] == 0)
+					opponentCoop += 1;
+				else
+					opponentDefect += 1;
+			}
+
+			return (opponentDefect >= opponentCoop) ? 1 : 0;
+		}
+	}
+
+	/**
+	 * Combination of T4T and History
+	 */
+	class T4THistoryPlayer extends Player {
+		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
+			// cooperate by default
+			if (n == 0)
+				return 0;
+
+			// https://www.sciencedirect.com/science/article/abs/pii/S0096300316301011
+			if (oppHistory1[n-1] == oppHistory2[n-1])
+				return oppHistory1[n-1];
+
+			// HistoryPlayer
+			int myScore = 0;
+			int oppScore1 = 0;
+			int oppScore2 = 0;
+
+			for (int index = 0; index < n; ++index) {
+				myScore += myHistory[index];
+				oppScore1 += oppHistory1[index];
+				oppScore2 += oppHistory2[index];
+			}
+
+			return (myScore >= oppScore1 && myScore >= oppScore2) ? 0 : 1;
+		}
+	}
+
+	/**
+	 * Combination of T4T, Tolerant and History
+	 */
+	class T4TTolerantHistoryPlayer extends Player {
+		private int numRoundsThreshold = 5;
+
+		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
+			// cooperate by default
+			if (n == 0)
+				return 0;
+
+			// https://www.sciencedirect.com/science/article/abs/pii/S0096300316301011
+			if (oppHistory1[n-1] == oppHistory2[n-1])
+				return oppHistory1[n-1];
+
+			if (n < numRoundsThreshold) {
+				// TolerantPlayer
+				int opponentCoop = 0;
+				int opponentDefect = 0;
+
+				for (int i = 0; i < n; i++) {
+					if (oppHistory1[i] == 0)
+						opponentCoop += 1;
+					else
+						opponentDefect += 1;
+
+					if (oppHistory2[i] == 0)
+						opponentCoop += 1;
+					else
+						opponentDefect += 1;
+				}
+
+				return (opponentDefect > opponentCoop) ? 1 : 0;
+			}
+			// else: more than numRoundsThreshold rounds have been played
+			
+			// HistoryPlayer
+			int myScore = 0;
+			int oppScore1 = 0;
+			int oppScore2 = 0;
+
+			for (int index = 0; index < n; ++index) {
+				myScore += myHistory[index];
+				oppScore1 += oppHistory1[index];
+				oppScore2 += oppHistory2[index];
+			}
+
+			return (myScore >= oppScore1 && myScore >= oppScore2) ? 0 : 1;
 		}
 	}
 
@@ -392,20 +495,21 @@ public class ThreePrisonersDilemma {
 	 * entry to makePlayer, and change numPlayers.
 	 */
 
-	int numPlayers = 12; // includes custom Players
+	int numPlayers = 16; // includes custom Players
 
 	Player makePlayer(int which) {
 		switch (which) {
-			// not using RandomPlayer and FreakyPlayer
-			// randomness makes it difficult to judge outcome
+			// Not using RandomPlayer, FreakyPlayer and given T4TPlayer,
+			// as randomness makes it difficult to judge outcome.
+			// Non-T4T variants have duplicates to even so that half are T4T.
 			case 0:
 				return new NicePlayer();
 			case 1:
 				return new NastyPlayer();
 			case 2:
-				return new TolerantPlayer();
+				return new RandomPlayer();
 			case 3:
-				return new T4TPlayer();
+				return new TolerantPlayer();
 			case 4:
 				return new T4TSwitchPlayer();
 			case 5:
@@ -417,10 +521,18 @@ public class ThreePrisonersDilemma {
 			case 8:
 				return new HistoryPlayer();
 			case 9:
-				return new T4TTolerantPlayer();
+				return new LessTolerantPlayer();
 			case 10:
-				return new T4TTolerantHistoryPlayer();
+				return new SwitchPlayer();
 			case 11:
+				return new T4TTolerantPlayer();
+			case 12:
+				return new T4THistoryPlayer();
+			case 13:
+				return new T4TLessTolerantPlayer();
+			case 14:
+				return new T4TTolerantHistoryPlayer();
+			case 15:
 				return new T4TTolerantTakeAdvantagePlayer();
 		}
 		throw new RuntimeException("Bad argument passed to makePlayer");
@@ -429,7 +541,7 @@ public class ThreePrisonersDilemma {
 	/* Finally, the remaining code actually runs the tournament. */
 
 	public static void main(String[] args) {
-		ThreePrisonersDilemma instance = new ThreePrisonersDilemma();
+		CustomThreePrisonersDilemma instance = new CustomThreePrisonersDilemma();
 		instance.runTournament();
 	}
 
