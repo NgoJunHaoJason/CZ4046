@@ -199,21 +199,24 @@ public class CustomThreePrisonersDilemma {
 	}
 
 	/**
-	 * Compares player history, then cooperates if score is >= others, else defect
+	 * Compares player history, then cooperates if my defection rate is >= others; else defect
 	 */
 	class HistoryPlayer extends Player {
 		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
-			int myScore = 0;
-			int oppScore1 = 0;
-			int oppScore2 = 0;
+			int myNumDefections = 0;
+			int oppNumDefections1 = 0;
+			int oppNumDefections2 = 0;
 
 			for (int index = 0; index < n; ++index) {
-				myScore += myHistory[index];
-				oppScore1 += oppHistory1[index];
-				oppScore2 += oppHistory2[index];
+				myNumDefections += myHistory[index];
+				oppNumDefections1 += oppHistory1[index];
+				oppNumDefections2 += oppHistory2[index];
 			}
 
-			return (myScore >= oppScore1 && myScore >= oppScore2) ? 0 : 1;
+			if (myNumDefections >= oppNumDefections1 && myNumDefections >= oppNumDefections2)
+				return 0;
+			else
+				return 1;
 		}
 	}
 
@@ -339,17 +342,20 @@ public class CustomThreePrisonersDilemma {
 				return oppHistory1[n-1];
 
 			// HistoryPlayer
-			int myScore = 0;
-			int oppScore1 = 0;
-			int oppScore2 = 0;
+			int myNumDefections = 0;
+			int oppNumDefections1 = 0;
+			int oppNumDefections2 = 0;
 
 			for (int index = 0; index < n; ++index) {
-				myScore += myHistory[index];
-				oppScore1 += oppHistory1[index];
-				oppScore2 += oppHistory2[index];
+				myNumDefections += myHistory[index];
+				oppNumDefections1 += oppHistory1[index];
+				oppNumDefections2 += oppHistory2[index];
 			}
 
-			return (myScore >= oppScore1 && myScore >= oppScore2) ? 0 : 1;
+			if (myNumDefections >= oppNumDefections1 && myNumDefections >= oppNumDefections2)
+				return 0;
+			else
+				return 1;
 		}
 	}
 
@@ -357,7 +363,7 @@ public class CustomThreePrisonersDilemma {
 	 * Combination of T4T, Tolerant and History
 	 */
 	class T4TTolerantHistoryPlayer extends Player {
-		private int numRoundsThreshold = 5;
+		private int numRoundsThreshold = 50;
 
 		int selectAction(int n, int[] myHistory, int[] oppHistory1, int[] oppHistory2) {
 			// cooperate by default
@@ -390,17 +396,20 @@ public class CustomThreePrisonersDilemma {
 			// else: more than numRoundsThreshold rounds have been played
 			
 			// HistoryPlayer
-			int myScore = 0;
-			int oppScore1 = 0;
-			int oppScore2 = 0;
+			int myNumDefections = 0;
+			int oppNumDefections1 = 0;
+			int oppNumDefections2 = 0;
 
 			for (int index = 0; index < n; ++index) {
-				myScore += myHistory[index];
-				oppScore1 += oppHistory1[index];
-				oppScore2 += oppHistory2[index];
+				myNumDefections += myHistory[index];
+				oppNumDefections1 += oppHistory1[index];
+				oppNumDefections2 += oppHistory2[index];
 			}
 
-			return (myScore >= oppScore1 && myScore >= oppScore2) ? 0 : 1;
+			if (myNumDefections >= oppNumDefections1 && myNumDefections >= oppNumDefections2)
+				return 0;
+			else
+				return 1;
 		}
 	}
 
